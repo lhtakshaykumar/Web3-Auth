@@ -8,8 +8,8 @@
     "@taquito/taquito": "^13.0.1",
     "@taquito/utils": "^13.0.1",
     "@tezos-core-tools/crypto-utils": "^0.0.7",
-    "@web3auth/base": "file:../../packages/base",
-    "@web3auth/openlogin-adapter": "file:../../packages/adapters/openlogin-adapter",
+    "@web3auth/base": "^7.0.1",
+    "@web3auth/openlogin-adapter": "^7.0.1",
     "force": "^0.0.3",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
@@ -47,6 +47,8 @@
     }
   },
   "devDependencies": {
+    "@polkadot/api": "^10.9.1",
+    "@polkadot/util-crypto": "^12.5.1",
     "@types/node": "^20.5.9",
     "@types/react": "^18.2.21",
     "@types/react-dom": "^18.2.7",

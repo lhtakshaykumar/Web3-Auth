@@ -1,11 +1,24 @@
-import { ADAPTER_EVENTS, CHAIN_NAMESPACES, IProvider } from "@web3auth/base";
+import {
+  ADAPTER_EVENTS,
+  CHAIN_NAMESPACES,
+  IProvider,
+  WALLET_ADAPTERS,
+} from "@web3auth/base";
 import { OpenloginAdapter } from "@web3auth/openlogin-adapter";
 import { TorusWalletConnectorPlugin } from "@web3auth/torus-wallet-connector-plugin";
-import { createContext, FunctionComponent, ReactNode, useCallback, useContext, useEffect, useState } from "react";
+import {
+  createContext,
+  FunctionComponent,
+  ReactNode,
+  useCallback,
+  useContext,
+  useEffect,
+  useState,
+} from "react";
 import { CHAIN_CONFIG, CHAIN_CONFIG_TYPE } from "../config/chainConfig";
 import { WEB3AUTH_NETWORK_TYPE } from "../config/web3AuthNetwork";
 import { getWalletProvider, IWalletProvider } from "./walletProvider";
-import {Web3Auth } from "@web3auth/modal";
+import { Web3Auth } from "@web3auth/modal";
 export interface IWeb3AuthContext {
   web3Auth: Web3Auth | null;
   provider: IWalletProvider | null;
@@ -57,7 +70,11 @@ interface IWeb3AuthProps {
   chain: CHAIN_CONFIG_TYPE;
 }
 
-export const Web3AuthProvider: FunctionComponent<IWeb3AuthState> = ({ children, web3AuthNetwork, chain }: IWeb3AuthProps) => {
+export const Web3AuthProvider: FunctionComponent<IWeb3AuthState> = ({
+  children,
+  web3AuthNetwork,
+  chain,
+}: IWeb3AuthProps) => {
   const [web3Auth, setWeb3Auth] = useState<Web3Auth | null>(null);
   const [provider, setProvider] = useState<IWalletProvider | null>(null);
   const [user, setUser] = useState<unknown | null>(null);
@@ -65,7 +82,11 @@ export const Web3AuthProvider: FunctionComponent<IWeb3AuthState> = ({ children, 
 
   const setWalletProvider = useCallback(
     (web3authProvider: IProvider) => {
-      const walletProvider = getWalletProvider(chain, web3authProvider, uiConsole);
+      const walletProvider = getWalletProvider(
+        chain,
+        web3authProvider,
+        uiConsole
+      );
       setProvider(walletProvider);
     },
     [chain]
@@ -98,7 +119,8 @@ export const Web3AuthProvider: FunctionComponent<IWeb3AuthState> = ({ children, 
       try {
         const currentChainConfig = CHAIN_CONFIG[chain];
         setIsLoading(true);
-        const clientId = "BGTEmDciVoijLrDcM1IXlE2kMPGCOccIzn1p7eV79ajWknkH9KSwgVUaQOgqwQJtdMXqyLjB0GlzOwyb1d_N7Yc";
+        const clientId =
+          "BH77XLmh3WV3Lg7-9MUKDdpmKXz4yO0CZ2hFskvoPS1dL-xVOmR85ZMEvOSd6HrYyfx5BXt4lHsG9ckNtewar1o";
         const web3AuthInstance = new Web3Auth({
           chainConfig: currentChainConfig,
           // get your client id from https://dashboard.web3auth.io
@@ -112,14 +134,14 @@ export const Web3AuthProvider: FunctionComponent<IWeb3AuthState> = ({ children, 
         });
         const adapter = new OpenloginAdapter({
           adapterSettings: {
-            network: web3AuthNetwork,
+            network: "testnet",
             clientId,
             loginConfig: {
-              facebook: {
-                name: "Custom Auth Login",
-                verifier: "facebook", // Please create a verifier on the developer dashboard and pass the name here
-                typeOfLogin: "facebook", // Pass on the login provider of the verifier you've created
-                showOnModal: false,
+              jwt: {
+                name: "Testing",
+                verifier: "TestAuth",
+                typeOfLogin: "jwt",
+                clientId: "RWIHfi82vLRqjUJYDyDDxrBlkrQsWjc4",
               },
             },
           },
@@ -128,8 +150,10 @@ export const Web3AuthProvider: FunctionComponent<IWeb3AuthState> = ({ children, 
         const plugin = new TorusWalletConnectorPlugin({
           walletInitOptions: {
             whiteLabel: {
-              logoDark: "https://avatars.githubusercontent.com/u/37784849?s=200&v=4",
-              logoLight: "https://avatars.githubusercontent.com/u/37784849?s=200&v=4",
+              logoDark:
+                "https://avatars.githubusercontent.com/u/37784849?s=200&v=4",
+              logoLight:
+                "https://avatars.githubusercontent.com/u/37784849?s=200&v=4",
               theme: {
                 isDark: true,
                 colors: {},
@@ -177,7 +201,16 @@ export const Web3AuthProvider: FunctionComponent<IWeb3AuthState> = ({ children, 
       uiConsole("web3auth not initialized yet");
       return;
     }
-    const localProvider = await web3Auth.connect();
+    console.log("cdscds");
+    const localProvider = await web3Auth.connectTo(WALLET_ADAPTERS.OPENLOGIN, {
+      relogin: true,
+      loginProvider: "jwt",
+      extraLoginOptions: {
+        domain: "https://dev-1hbcjplyrq4yafk0.us.auth0.com", // Please append "https://" before your domain
+        verifierIdField: "sub",
+      },
+    });
+    console.log("localProvider", localProvider);
     setWalletProvider(localProvider!);
   };
 
@@ -276,7 +309,11 @@ export const Web3AuthProvider: FunctionComponent<IWeb3AuthState> = ({ children, 
   const uiConsole = (...args: unknown[]): void => {
     const el = document.querySelector("#console>p");
     if (el) {
-      el.innerHTML = JSON.stringify(args || {}, (key, value) => (typeof value === "bigint" ? value.toString() : value), 2);
+      el.innerHTML = JSON.stringify(
+        args || {},
+        (key, value) => (typeof value === "bigint" ? value.toString() : value),
+        2
+      );
     }
   };
 
@@ -297,5 +334,9 @@ export const Web3AuthProvider: FunctionComponent<IWeb3AuthState> = ({ children, 
     addChain,
     switchChain,
   };
-  return <Web3AuthContext.Provider value={contextProvider}>{children}</Web3AuthContext.Provider>;
+  return (
+    <Web3AuthContext.Provider value={contextProvider}>
+      {children}
+    </Web3AuthContext.Provider>
+  );
 };

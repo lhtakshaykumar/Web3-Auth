@@ -28,6 +28,12 @@ export const CHAIN_CONFIG = {
     ticker: "matic",
     tickerName: "Matic",
   } as CustomChainConfig,
+  datasent: {
+    displayName: "Datasent",
+    chainNamespace: CHAIN_NAMESPACES.OTHER,
+    chainId: "0x1",
+    rpcTarget: `http://datasent-dev-lb-688866520.us-east-1.elb.amazonaws.com:9944`,
+  } as CustomChainConfig,
   tezos: {
     chainNamespace: CHAIN_NAMESPACES.OTHER,
     displayName: "Tezos Ithacanet",
